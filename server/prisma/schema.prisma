@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  type        ProductType // Physical or Digital
+  price       Float
+  currency    String
+  stock       Int?        // Nullable for digital products
+  tags        String[]
+  images      String[]    // Array of Cloudinary URLs
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  reviews     Review[]
+}
+
+enum ProductType {
+  PHYSICAL
+  DIGITAL
+}
+
+model Review {
+  id           String   @id @default(uuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reviewerName String
+  rating       Int      // 1-5
+  comment      String
+  createdAt    DateTime @default(now())
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  stripeSessionId  String      @unique
+  customerEmail    String
+  currency         String
+  totalAmount      Float
+  status           OrderStatus @default(PENDING)
+  createdAt        DateTime    @default(now())
+  items            OrderItem[]
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model OrderItem {
+  id          String @id @default(uuid())
+  orderId     String
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Float
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
