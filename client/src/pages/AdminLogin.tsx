@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Loader2 } from 'lucide-react';
 import api from '../services/api';
+import { useStore } from '../store/useStore';
 
 export function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ export function AdminLogin() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useStore();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -16,10 +18,10 @@ export function AdminLogin() {
         setIsLoading(true);
 
         try {
-            const response = await api.post('/admin/login', { email, password });
+            const response = await api.post('/auth/admin/login', { email, password });
 
             if (response.data.token) {
-                localStorage.setItem('adminToken', response.data.token);
+                setUser(response.data.user, response.data.token);
                 // Successful login, navigate to dashboard
                 navigate('/admin/dashboard');
             }

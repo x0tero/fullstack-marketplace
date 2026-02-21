@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import { upload } from '../services/uploadService.js';
 
 const router = express.Router();
@@ -75,7 +75,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Admin: Create product
-router.post('/', authMiddleware, upload.array('images', 5), async (req, res) => {
+router.post('/', requireAuth, requireAdmin, upload.array('images', 5), async (req, res) => {
     try {
         const { name, description, type, price, currency, stock, tags } = req.body;
         const files = req.files as Express.Multer.File[];
@@ -101,7 +101,7 @@ router.post('/', authMiddleware, upload.array('images', 5), async (req, res) => 
 });
 
 // Admin: Update product
-router.put('/:id', authMiddleware, upload.array('images', 5), async (req, res) => {
+router.put('/:id', requireAuth, requireAdmin, upload.array('images', 5), async (req, res) => {
     try {
         const { name, description, type, price, currency, stock, tags } = req.body;
         const files = req.files as Express.Multer.File[];
@@ -138,7 +138,7 @@ router.put('/:id', authMiddleware, upload.array('images', 5), async (req, res) =
 });
 
 // Admin: Delete product
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     try {
         await prisma.product.delete({ where: { id: req.params.id as string } });
         res.json({ message: 'Product deleted successfully' });

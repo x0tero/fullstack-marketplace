@@ -1,12 +1,12 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all orders (Admin only)
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
     try {
         const orders = await prisma.order.findMany({
             orderBy: { createdAt: 'desc' },
@@ -22,7 +22,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Admin Dashboard Summary
-router.get('/summary', authMiddleware, async (req, res) => {
+router.get('/summary', requireAuth, requireAdmin, async (req, res) => {
     try {
         const totalProducts = await prisma.product.count();
         const totalOrders = await prisma.order.count();

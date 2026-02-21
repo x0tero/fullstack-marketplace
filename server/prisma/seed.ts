@@ -12,15 +12,27 @@ async function main() {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.product.deleteMany();
-  await prisma.admin.deleteMany();
+  await prisma.user.deleteMany();
 
   console.log('Seeding Admin account...');
   const passwordHash = await bcrypt.hash('admin123', 10);
-  await prisma.admin.create({
+  await prisma.user.create({
     data: {
+      name: 'Admin User',
       email: 'admin@example.com',
       passwordHash,
+      role: 'ADMIN',
     },
+  });
+
+  console.log('Seeding Dummy Customer account...');
+  const dummyUser = await prisma.user.create({
+    data: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      passwordHash,
+      role: 'USER',
+    }
   });
 
   console.log('Seeding Products...');
@@ -76,7 +88,7 @@ async function main() {
     await prisma.review.create({
       data: {
         productId: product.id,
-        reviewerName: 'John Doe',
+        userId: dummyUser.id,
         rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
         comment: 'Great product, highly recommended!',
       }

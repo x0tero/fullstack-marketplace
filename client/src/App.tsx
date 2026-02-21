@@ -11,6 +11,8 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminLayout } from './components/AdminLayout';
 import { AdminProducts } from './pages/AdminProducts';
 import { AdminOrders } from './pages/AdminOrders';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 
 function App() {
   return (
@@ -23,10 +25,12 @@ function App() {
           <Route path="products/:id" element={<ProductOverview />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="order-confirmation" element={<OrderConfirmation />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
         </Route>
 
-        {/* Public Admin Auth */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        {/* Public Admin Auth Route */}
+        <Route path="/:shopName/admin-panel" element={<AdminLogin />} />
 
         {/* Protected Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

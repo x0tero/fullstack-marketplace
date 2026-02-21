@@ -23,7 +23,7 @@ app.use('/api/webhook/stripe', express.raw({ type: 'application/json' }), stripe
 app.use(express.json());
 
 // Main Routes
-app.use('/api/admin', authRoutes); // /api/admin/login
+app.use('/api/auth', authRoutes); // Handles /register, /login, /admin/login
 app.use('/api/products', productRoutes);
 app.use('/api/admin/products', productRoutes); // Handled inside productRoutes with authMiddleware
 app.use('/api/reviews', reviewRoutes);

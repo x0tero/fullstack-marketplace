@@ -9,6 +9,13 @@ export interface CartItem {
     image: string;
 }
 
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: 'USER' | 'ADMIN';
+}
+
 interface CartState {
     items: CartItem[];
     isOpen: boolean;
@@ -20,6 +27,10 @@ interface CartState {
     setIsOpen: (isOpen: boolean) => void;
     setCurrency: (currency: string) => void;
     totalPrice: () => number;
+    user: User | null;
+    token: string | null;
+    setUser: (user: User | null, token: string | null) => void;
+    logout: () => void;
 }
 
 export const useStore = create<CartState>()(
@@ -28,6 +39,8 @@ export const useStore = create<CartState>()(
             items: [],
             isOpen: false,
             currency: 'USD',
+            user: null,
+            token: null,
             addItem: (newItem) => {
                 set((state) => {
                     const existingItem = state.items.find((item) => item.id === newItem.id);
@@ -61,10 +74,12 @@ export const useStore = create<CartState>()(
             totalPrice: () => {
                 return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
             },
+            setUser: (user, token) => set({ user, token }),
+            logout: () => set({ user: null, token: null }),
         }),
         {
             name: 'marketplace-storage', // name of item in the storage (must be unique)
-            partialize: (state) => ({ items: state.items, currency: state.currency }), // selectively persist fields
+            partialize: (state) => ({ items: state.items, currency: state.currency, user: state.user, token: state.token }), // selectively persist fields
         }
     )
 );

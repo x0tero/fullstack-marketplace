@@ -3,9 +3,13 @@ import { ShoppingCart, Search, Menu } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export function Navbar() {
-    const { items, setIsOpen, currency, setCurrency } = useStore();
+    const { items, setIsOpen, currency, setCurrency, user, logout } = useStore();
 
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+    const handleLogout = () => {
+        logout();
+    };
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-primary-100 bg-white/80 backdrop-blur-md">
@@ -56,6 +60,35 @@ export function Navbar() {
                     <button className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-full">
                         <Menu className="h-5 w-5" />
                     </button>
+
+                    {user ? (
+                        <div className="hidden md:flex items-center gap-4 ml-2 border-l border-gray-200 pl-4">
+                            <span className="text-sm font-medium text-gray-700">Hi, {user.name}</span>
+                            <button
+                                onClick={handleLogout}
+                                className="text-sm font-medium text-primary-600 hover:text-primary-700 transition"
+                            >
+                                Logout
+                            </button>
+                            {user.role === 'ADMIN' && (
+                                <Link to="/admin/dashboard" className="text-sm font-medium text-primary-600 hover:text-primary-700 transition">
+                                    Dashboard
+                                </Link>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="hidden md:flex items-center gap-4 ml-2 border-l border-gray-200 pl-4">
+                            <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-primary-600 transition">
+                                Log in
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="rounded-full bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition shadow-sm shadow-primary-500/30"
+                            >
+                                Register
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         </nav>
